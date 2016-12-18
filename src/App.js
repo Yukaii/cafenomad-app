@@ -5,9 +5,9 @@ import MapView from 'react-native-maps';
 import { getCafes } from './utils/api';
 
 const styles = StyleSheet.create({
-  map: {
+	map: {
 		...StyleSheet.absoluteFillObject
-  },
+	}
 });
 
 const SPACE = 0.003;
@@ -25,14 +25,14 @@ export default class App extends Component {
 		navigator.geolocation.getCurrentPosition(position => {
 			this.map.fitToCoordinates(this.positionRect(position.coords), {
 				animated: true
-			})
-		})
+			});
+		});
 
 		getCafes().then(response => response.json()).then(cafes => {
 			this.setState({
 				cafes
 			});
-		})
+		});
 	}
 
 	positionRect(coords) {
@@ -57,6 +57,6 @@ export default class App extends Component {
 					/>
 				))}
 			</MapView>
-		)
+		);
 	}
 }
