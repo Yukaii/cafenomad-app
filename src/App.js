@@ -39,12 +39,12 @@ export default class App extends Component {
 
 		let boundary = [
 			{
-				latitude: latitude + latitudeDelta / 2 * 3,
-				longitude: longitude + longitudeDelta / 2 * 3
+				latitude: latitude + latitudeDelta,
+				longitude: longitude + longitudeDelta
 			},
 			{
-				latitude: latitude - latitudeDelta / 2 * 3,
-				longitude: longitude - longitudeDelta / 2 * 3
+				latitude: latitude - latitudeDelta,
+				longitude: longitude - longitudeDelta
 			}
 		];
 
