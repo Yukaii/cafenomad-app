@@ -15,7 +15,8 @@ export default class App extends Component {
 		super(props);
 
 		this.state = {
-			cafes: []
+			cafes: [],
+			cafesNearby: []
 		};
 	}
 
@@ -33,12 +34,48 @@ export default class App extends Component {
 		});
 	}
 
-	positionRect(coords) {
-		const { latitude, longitude } = coords;
+	onRegionChangeComplete = (region) => {
+		const { longitudeDelta, latitudeDelta, longitude, latitude } = region;
 
+		let boundary = [
+			{
+				latitude: latitude + latitudeDelta / 2 * 3,
+				longitude: longitude + longitudeDelta / 2 * 3
+			},
+			{
+				latitude: latitude - latitudeDelta / 2 * 3,
+				longitude: longitude - longitudeDelta / 2 * 3
+			}
+		];
+
+		let cafesNearby = this.state.cafes.filter(cafe => {
+			return (cafe.longitude < boundary[0].longitude) &&
+			       (cafe.longitude > boundary[1].longitude) &&
+			       (cafe.latitude  < boundary[0].latitude)  &&
+						 (cafe.latitude  > boundary[1].latitude);
+		});
+
+		this.setState({
+			cafesNearby
+		});
+
+		console.log(`cafesNearby: ${cafesNearby.length}`);
+	}
+
+	getViewportDimension() {
 		const { width, height } = Dimensions.get('window');
 		const viewportHeightKm = 0.7 / width * height;
 		const viewportWidthKm = 0.7;
+
+		return {
+			viewportHeightKm,
+			viewportWidthKm
+		};
+	}
+
+	positionRect(coords) {
+		const { latitude, longitude } = coords;
+		const { viewportWidthKm, viewportHeightKm } = this.getViewportDimension();
 
 		const LONGITUDE_TO_KM = 102.08;
 		const LATITUDE_TO_KM  = 110.574;
@@ -46,11 +83,11 @@ export default class App extends Component {
 		return [
 			{
 				latitude: latitude + viewportHeightKm / LATITUDE_TO_KM / 2,
-				longitude: longitude - viewportWidthKm / LONGITUDE_TO_KM / 2
+				longitude: longitude + viewportWidthKm / LONGITUDE_TO_KM / 2
 			},
 			{
 				latitude: latitude - viewportHeightKm / LATITUDE_TO_KM / 2,
-				longitude: longitude + viewportWidthKm / LONGITUDE_TO_KM / 2
+				longitude: longitude - viewportWidthKm / LONGITUDE_TO_KM / 2
 			}
 		];
 	}
@@ -60,6 +97,7 @@ export default class App extends Component {
 			<MapView
 				ref={ref => { this.map = ref; }}
 				style={styles.map}
+				onRegionChangeComplete={this.onRegionChangeComplete}
 			>
 				{this.state.cafes.map(cafe => (
 					<MapView.Marker
