@@ -1,14 +1,27 @@
 import React, { Component } from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, View, Text, ListView, TouchableOpacity } from 'react-native';
 import MapView from 'react-native-maps';
 
 import { getCafes } from './utils/api';
 
+const screen = Dimensions.get('window');
+
 const styles = StyleSheet.create({
 	map: {
 		...StyleSheet.absoluteFillObject
+	},
+	card: {
+		marginTop: screen.height / 4 * 3,
+		paddingTop: 15,
+		width: screen.width - 30,
+		marginLeft: 15,
+		flex: 1,
+		bottom: 0,
+		backgroundColor: 'white'
 	}
 });
+
+const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
 export default class App extends Component {
 	constructor(props) {
@@ -16,7 +29,8 @@ export default class App extends Component {
 
 		this.state = {
 			cafes: [],
-			cafesNearby: []
+			cafesNearby: ds.cloneWithRows([]),
+			markerRefs: {}
 		};
 	}
 
@@ -56,7 +70,7 @@ export default class App extends Component {
 		});
 
 		this.setState({
-			cafesNearby
+			cafesNearby: ds.cloneWithRows(cafesNearby)
 		});
 
 		console.log(`cafesNearby: ${cafesNearby.length}`);
@@ -93,21 +107,61 @@ export default class App extends Component {
 		];
 	}
 
+	onPressCafe = cafe => {
+		return () => {
+			this.map.animateToCoordinate({
+				latitude: cafe.latitude,
+				longitude: cafe.longitude
+			});
+
+			this.markerRefs[cafe.id].showCallout();
+
+			// workaround for coord not in center
+			this.map.animateToCoordinate({
+				latitude: cafe.latitude,
+				longitude: cafe.longitude
+			});
+		};
+	}
+
 	render() {
 		return(
-			<MapView
-				ref={ref => { this.map = ref; }}
-				style={styles.map}
-				onRegionChangeComplete={this.onRegionChangeComplete}
-			>
-				{this.state.cafes.map(cafe => (
-					<MapView.Marker
-						coordinate={{latitude: parseFloat(cafe.latitude), longitude: parseFloat(cafe.longitude)}}
-						title={cafe.name}
-						key={cafe.id}
-					/>
-				))}
-			</MapView>
+			<View style={{ flex: 1, position: 'relative' }}>
+				<MapView
+					ref={ref => { this.map = ref; }}
+					style={styles.map}
+					onRegionChangeComplete={this.onRegionChangeComplete}
+				>
+					{this.state.cafes.map(cafe => (
+						<MapView.Marker
+							coordinate={{latitude: parseFloat(cafe.latitude), longitude: parseFloat(cafe.longitude)}}
+							title={cafe.name}
+							key={cafe.id}
+							ref={
+								ref => {
+									if (typeof this.markerRefs === 'undefined') {
+										this.markerRefs = {};
+									}
+									this.markerRefs[cafe.id] = ref;
+								}
+							}
+						/>
+					))}
+				</MapView>
+				<ListView
+					style={styles.card}
+					dataSource={this.state.cafesNearby}
+					enableEmptySections={true}
+					renderRow={cafe => {
+						return(
+							<TouchableOpacity onPress={this.onPressCafe(cafe)}>
+								<Text key={cafe.id}>{cafe.name}</Text>
+							</TouchableOpacity>
+						);
+					}}
+				>
+				</ListView>
+			</View>
 		);
 	}
 }
