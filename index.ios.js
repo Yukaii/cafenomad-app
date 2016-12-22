@@ -6,17 +6,17 @@
 
 import React, { Component } from 'react';
 import {
-  AppRegistry,
+	AppRegistry,
 } from 'react-native';
 
 import App from './src/App';
 
 export default class cafenomad extends Component {
-  render() {
-    return (
+	render() {
+		return (
 			<App />
-    );
-  }
+		);
+	}
 }
 
 AppRegistry.registerComponent('cafenomad', () => cafenomad);
