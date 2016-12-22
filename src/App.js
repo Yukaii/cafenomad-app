@@ -77,6 +77,7 @@ export default class App extends Component {
 		const { latitude, longitude } = coords;
 		const { viewportWidthKm, viewportHeightKm } = this.getViewportDimension();
 
+		// Hard code value, calcuate using northern tropic
 		const LONGITUDE_TO_KM = 102.08;
 		const LATITUDE_TO_KM  = 110.574;
 
