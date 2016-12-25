@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 		...StyleSheet.absoluteFillObject
 	},
 	card: {
-		marginTop: screen.height / 4 * 3,
+		marginTop: screen.height / 5 * 4,
 		width: screen.width - 30,
 		marginLeft: 15,
 		flex: 1,
@@ -70,18 +70,26 @@ export default class App extends Component {
 			onPanResponderGrant: (e, gestureState) => {
 				this.state.drag.setOffset({x: this._animatedValueX, y: this._animatedValueY});
 				this.state.drag.setValue({x: 0, y: 0}); //Initial value
-				console.log(gestureState);
-				console.log('grant!!!!');
 			},
 			onPanResponderMove: (e, gestureState) => {
-				console.log(gestureState);
-				return Animated.event([
-					null, {dx: this.state.drag.x, dy: this.state.drag.y}
-				])(e, gestureState);
+				if (gestureState.moveY > screen.height / 5) {
+					Animated.event([
+						null, {dx: this.state.drag.x, dy: this.state.drag.y}
+					])(e, gestureState);
+				}
 			},
-			onPanResponderRelease: () => {
-				console.log(`release!!!!`);
+			onPanResponderRelease: (e, gestureState) => {
 				this.state.drag.flattenOffset(); // Flatten the offset so it resets the default positioning
+
+				if (gestureState.moveY < (4 / 5 + 1 / 2) / 2 * screen.height) {
+					Animated.spring(this.state.drag, {
+						toValue: {x: 0, y: -(4 / 5 - 1 / 2) * screen.height}
+					}).start();
+				} else {
+					Animated.spring(this.state.drag, {
+						toValue: {x: 0, y: 0}
+					}).start();
+				}
 			}
 		});
 
@@ -153,7 +161,15 @@ export default class App extends Component {
 
 	cardStyle = () => {
 		return {
-			marginTop: Animated.add(this.state.drag.y, new Animated.Value(screen.height / 4 * 3))
+			marginTop: Animated.add(this.state.drag.y, new Animated.Value(screen.height / 5 * 4)),
+			width: this.state.drag.y.interpolate({
+				inputRange: [-screen.height / 2, -screen.height / 3, 0, 10],
+				outputRange: [screen.width, screen.width, screen.width - 30, screen.width - 30]
+			}),
+			marginLeft: this.state.drag.y.interpolate({
+				inputRange: [-screen.height / 2, -screen.height / 3, 0, 10],
+				outputRange: [0, 0, 15, 15]
+			}),
 		};
 	}
 
