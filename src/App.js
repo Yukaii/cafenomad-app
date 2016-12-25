@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { StyleSheet, Dimensions, View, Text, ListView, TouchableOpacity } from 'react-native';
+import {
+	StyleSheet,
+	Dimensions,
+	View,
+	Text,
+	ListView,
+	TouchableOpacity,
+	Animated,
+	PanResponder
+} from 'react-native';
 import MapView from 'react-native-maps';
 
 import { getCafes } from './utils/api';
@@ -12,7 +21,6 @@ const styles = StyleSheet.create({
 	},
 	card: {
 		marginTop: screen.height / 4 * 3,
-		paddingTop: 15,
 		width: screen.width - 30,
 		marginLeft: 15,
 		flex: 1,
@@ -30,7 +38,8 @@ export default class App extends Component {
 		this.state = {
 			cafes: [],
 			cafesNearby: ds.cloneWithRows([]),
-			markerRefs: {}
+			markerRefs: {},
+			drag: new Animated.ValueXY(),
 		};
 	}
 
@@ -46,6 +55,41 @@ export default class App extends Component {
 				cafes
 			});
 		});
+	}
+
+	componentWillMount() {
+		this._animatedValueX = 0;
+		this._animatedValueY = 0;
+
+		this.state.drag.x.addListener((value) => this._animatedValueX = value.value);
+		this.state.drag.y.addListener((value) => this._animatedValueY = value.value);
+
+		this._panResponder = PanResponder.create({
+			onMoveShouldSetResponderCapture: () => true,
+			onMoveShouldSetPanResponderCapture: () => true,
+			onPanResponderGrant: (e, gestureState) => {
+				this.state.drag.setOffset({x: this._animatedValueX, y: this._animatedValueY});
+				this.state.drag.setValue({x: 0, y: 0}); //Initial value
+				console.log(gestureState);
+				console.log('grant!!!!');
+			},
+			onPanResponderMove: (e, gestureState) => {
+				console.log(gestureState);
+				return Animated.event([
+					null, {dx: this.state.drag.x, dy: this.state.drag.y}
+				])(e, gestureState);
+			},
+			onPanResponderRelease: () => {
+				console.log(`release!!!!`);
+				this.state.drag.flattenOffset(); // Flatten the offset so it resets the default positioning
+			}
+		});
+
+	}
+
+	componentWillUnmount() {
+		this.state.drag.x.removeAllListeners();
+		this.state.drag.y.removeAllListeners();
 	}
 
 	onRegionChangeComplete = (region) => {
@@ -107,6 +151,12 @@ export default class App extends Component {
 		];
 	}
 
+	cardStyle = () => {
+		return {
+			marginTop: Animated.add(this.state.drag.y, new Animated.Value(screen.height / 4 * 3))
+		};
+	}
+
 	onPressCafe = cafe => {
 		return () => {
 			this.map.animateToCoordinate({
@@ -148,19 +198,27 @@ export default class App extends Component {
 						/>
 					))}
 				</MapView>
-				<ListView
-					style={styles.card}
-					dataSource={this.state.cafesNearby}
-					enableEmptySections={true}
-					renderRow={cafe => {
-						return(
-							<TouchableOpacity onPress={this.onPressCafe(cafe)}>
-								<Text key={cafe.id}>{cafe.name}</Text>
-							</TouchableOpacity>
-						);
-					}}
-				>
-				</ListView>
+				<Animated.View style={[styles.card, this.cardStyle()]}>
+					<View
+						style={{alignItems: 'center', paddingVertical: 10}}
+						{...this._panResponder.panHandlers}
+					>
+						<View style={{width: 30, backgroundColor: 'black', height: 3, borderRadius: 5}} />
+					</View>
+					<ListView
+						style={{flex: 1}}
+						dataSource={this.state.cafesNearby}
+						enableEmptySections={true}
+						renderRow={cafe => {
+							return(
+								<TouchableOpacity onPress={this.onPressCafe(cafe)} style={{flex: 1}}>
+									<Text key={cafe.id}>{cafe.name}</Text>
+								</TouchableOpacity>
+							);
+						}}
+					>
+					</ListView>
+				</Animated.View>
 			</View>
 		);
 	}
