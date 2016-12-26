@@ -8,6 +8,7 @@ import {
 	PanResponder
 } from 'react-native';
 import MapView from 'react-native-maps';
+import ReactNativeComponentTree from 'ReactNativeComponentTree';
 
 import CafeCard from './components/CafeCard';
 
@@ -47,11 +48,13 @@ export default class App extends Component {
 
 		this.state = {
 			cafes: [],
-			cafesNearby: ds.cloneWithRows([]),
-			markerRefs: {},
+			cafesNearby: [],
+			cafesNearbyDs: ds.cloneWithRows([]),
 			drag: new Animated.ValueXY(),
 			isCardExpanded: false,
-			hasZoomIn: false
+			hasZoomIn: false,
+			moveWithZoom: false,
+			currentSelectCafeId: null
 		};
 	}
 
@@ -69,7 +72,9 @@ export default class App extends Component {
 				cafes: cafes.map(cafe => {
 					return {
 						...cafe,
-						rating: averagerating(cafe)
+						rating: averagerating(cafe),
+						latitude: parseFloat(cafe.latitude),
+						longitude: parseFloat(cafe.longitude)
 					};
 				})
 			});
@@ -113,7 +118,7 @@ export default class App extends Component {
 							latitude: this.currentRegion.latitude - viewportHeightKm / LATITUDE_TO_KM / 4
 						});
 
-						this.setState({isCardExpanded: true});
+						this.setState({isCardExpanded: true, moveWithZoom: true});
 					}
 
 				} else {
@@ -127,7 +132,7 @@ export default class App extends Component {
 							latitude: this.currentRegion.latitude + viewportHeightKm / LATITUDE_TO_KM / 4
 						});
 
-						this.setState({isCardExpanded: false});
+						this.setState({isCardExpanded: false, moveWithZoom: true});
 					}
 
 				}
@@ -142,6 +147,13 @@ export default class App extends Component {
 	}
 
 	onRegionChangeComplete = (region) => {
+		if (this.state.moveWithZoom) {
+			this.setState({
+				moveWithZoom: false
+			});
+
+			return;
+		}
 		const { longitudeDelta, latitudeDelta, longitude, latitude } = region;
 
 		this.currentRegion = region;
@@ -166,7 +178,8 @@ export default class App extends Component {
 		}).sort((c1, c2) => c2.rating - c1.rating);
 
 		this.setState({
-			cafesNearby: ds.cloneWithRows(cafesNearby)
+			cafesNearbyDs: ds.cloneWithRows(cafesNearby),
+			cafesNearby
 		});
 	}
 
@@ -213,9 +226,9 @@ export default class App extends Component {
 	}
 
 	onPressCafe = cafe => {
-		const { viewportHeightKm, viewportWidthKm } = this.getViewportDimension();
-
 		return () => {
+			const { viewportHeightKm, viewportWidthKm } = this.getViewportDimension();
+
 			if (this.state.isCardExpanded) {
 				this.map.animateToRegion({
 					latitude: cafe.latitude - viewportHeightKm / LATITUDE_TO_KM / 4,
@@ -246,14 +259,46 @@ export default class App extends Component {
 					longitude: cafe.longitude
 				});
 			}
-
 		};
+	}
+
+	onCardLayout = (event, id) => {
+		const {height} = event.nativeEvent.layout;
+		if (typeof this.cardHeights === 'undefined') {
+			this.cardHeights = {};
+		}
+
+		this.cardHeights[id] = height;
+	}
+
+	onMarkerSelect = (event) => {
+		const { latitude, longitude } = event.nativeEvent.coordinate;
+
+		// alert(Object.keys(ReactNativeComponentTree.getInstanceFromNode(event.target)._currentElement.props));
+		const cafe = this.state.cafes.find(cafe => cafe.latitude === latitude && cafe.longitude === longitude);
+
+		this.setState({currentSelectCafeId: cafe.id});
+
+		const index = this.state.cafesNearby.findIndex(c => c.id === cafe.id);
+
+		if (index > 0) {
+			let sumOfHeight = 0;
+			for (let i = 0; i <= index-1; i++) {
+				sumOfHeight += this.cardHeights[this.state.cafesNearby[i].id] + 5;
+			}
+
+			this.listview.scrollTo({y: sumOfHeight});
+		}
+
+		// alert(this.state.currentSelectCafeId);
 	}
 
 	renderNearbyCafeCard = (cafe) => {
 		return(
 			<CafeCard
 				key={cafe.id}
+				id={cafe.id}
+				onLayout={this.onCardLayout}
 				onPress={this.onPressCafe(cafe)}
 				title={cafe.name}
 				description={cafe.address}
@@ -269,12 +314,14 @@ export default class App extends Component {
 					ref={ref => { this.map = ref; }}
 					style={styles.map}
 					onRegionChangeComplete={this.onRegionChangeComplete}
+					onMarkerSelect={this.onMarkerSelect}
 					showsUserLocation={true}
 				>
 					{this.state.cafes.map(cafe => (
 						<MapView.Marker
-							coordinate={{latitude: parseFloat(cafe.latitude), longitude: parseFloat(cafe.longitude)}}
+							coordinate={{latitude: cafe.latitude, longitude: cafe.longitude}}
 							title={cafe.name}
+							id={cafe.id}
 							key={cafe.id}
 							ref={
 								ref => {
@@ -289,14 +336,15 @@ export default class App extends Component {
 				</MapView>
 				<Animated.View style={[styles.card, this.cardStyle()]}>
 					<View
-						style={{alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderColor: '#bbb'}}
+						style={{alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5, borderColor: '#bbb'}}
 						{...this._panResponder.panHandlers}
 					>
 						<View style={{width: 35, backgroundColor: '#3e3e3e', height: 5, borderRadius: 5}} />
 					</View>
 					<ListView
-						style={{flex: 1, paddingHorizontal: 8}}
-						dataSource={this.state.cafesNearby}
+						ref={ref => { this.listview = ref; }}
+						style={{flex: 1, paddingHorizontal: 8, paddingVertical: 5}}
+						dataSource={this.state.cafesNearbyDs}
 						enableEmptySections={true}
 						renderRow={this.renderNearbyCafeCard}
 					>
