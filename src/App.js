@@ -44,7 +44,8 @@ export default class App extends Component {
 			cafesNearby: ds.cloneWithRows([]),
 			markerRefs: {},
 			drag: new Animated.ValueXY(),
-			isCardExpanded: false
+			isCardExpanded: false,
+			hasZoomIn: false
 		};
 	}
 
@@ -53,6 +54,8 @@ export default class App extends Component {
 			this.map.fitToCoordinates(this.positionRect(position.coords), {
 				animated: true
 			});
+
+			this.setState({hasZoomIn: true});
 		});
 
 		getCafes().then(response => response.json()).then(cafes => {
@@ -63,8 +66,6 @@ export default class App extends Component {
 	}
 
 	componentWillMount() {
-		const { viewportHeightKm } = this.getViewportDimension();
-
 		this._animatedValueX = 0;
 		this._animatedValueY = 0;
 
@@ -86,6 +87,8 @@ export default class App extends Component {
 				}
 			},
 			onPanResponderRelease: (e, gestureState) => {
+				const { viewportHeightKm } = this.getViewportDimension();
+
 				this.state.drag.flattenOffset(); // Flatten the offset so it resets the default positioning
 
 				if (gestureState.moveY < (4 / 5 + 1 / 2) / 2 * screen.height) {
@@ -129,7 +132,9 @@ export default class App extends Component {
 
 	onRegionChangeComplete = (region) => {
 		const { longitudeDelta, latitudeDelta, longitude, latitude } = region;
+
 		this.currentRegion = region;
+		this.viewportWidthKm = latitudeDelta / 2 * LONGITUDE_TO_KM;
 
 		let boundary = [
 			{
@@ -156,8 +161,9 @@ export default class App extends Component {
 
 	getViewportDimension() {
 		const { width, height } = Dimensions.get('window');
-		const viewportHeightKm = 0.7 / width * height;
-		const viewportWidthKm = 0.7;
+
+		const viewportWidthKm = this.state.hasZoomIn ? this.viewportWidthKm : 0.7;
+		const viewportHeightKm = viewportWidthKm / width * height;
 
 		return {
 			viewportHeightKm,
