@@ -219,7 +219,7 @@ export default class App extends Component {
 						style={{alignItems: 'center', paddingVertical: 10}}
 						{...this._panResponder.panHandlers}
 					>
-						<View style={{width: 30, backgroundColor: 'black', height: 3, borderRadius: 5}} />
+						<View style={{width: 35, backgroundColor: '#3e3e3e', height: 5, borderRadius: 5}} />
 					</View>
 					<ListView
 						style={{flex: 1}}
