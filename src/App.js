@@ -29,6 +29,10 @@ const styles = StyleSheet.create({
 	}
 });
 
+// Hard code value, calcuate using northern tropic
+const LONGITUDE_TO_KM = 102.08;
+const LATITUDE_TO_KM  = 110.574;
+
 const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
 export default class App extends Component {
@@ -40,6 +44,7 @@ export default class App extends Component {
 			cafesNearby: ds.cloneWithRows([]),
 			markerRefs: {},
 			drag: new Animated.ValueXY(),
+			isCardExpanded: false
 		};
 	}
 
@@ -58,6 +63,8 @@ export default class App extends Component {
 	}
 
 	componentWillMount() {
+		const { viewportHeightKm } = this.getViewportDimension();
+
 		this._animatedValueX = 0;
 		this._animatedValueY = 0;
 
@@ -85,10 +92,24 @@ export default class App extends Component {
 					Animated.spring(this.state.drag, {
 						toValue: {x: 0, y: -(4 / 5 - 1 / 2) * screen.height}
 					}).start();
+
+					this.setState({isCardExpanded: true});
+
+					this.map.animateToRegion({
+						...this.currentRegion,
+						latitude: this.currentRegion.latitude - viewportHeightKm / LATITUDE_TO_KM / 4
+					});
 				} else {
 					Animated.spring(this.state.drag, {
 						toValue: {x: 0, y: 0}
 					}).start();
+
+					this.setState({isCardExpanded: false});
+
+					this.map.animateToRegion({
+						...this.currentRegion,
+						latitude: this.currentRegion.latitude + viewportHeightKm / LATITUDE_TO_KM / 4
+					});
 				}
 			}
 		});
@@ -102,6 +123,7 @@ export default class App extends Component {
 
 	onRegionChangeComplete = (region) => {
 		const { longitudeDelta, latitudeDelta, longitude, latitude } = region;
+		this.currentRegion = region;
 
 		let boundary = [
 			{
@@ -124,8 +146,6 @@ export default class App extends Component {
 		this.setState({
 			cafesNearby: ds.cloneWithRows(cafesNearby)
 		});
-
-		console.log(`cafesNearby: ${cafesNearby.length}`);
 	}
 
 	getViewportDimension() {
@@ -142,10 +162,6 @@ export default class App extends Component {
 	positionRect(coords) {
 		const { latitude, longitude } = coords;
 		const { viewportWidthKm, viewportHeightKm } = this.getViewportDimension();
-
-		// Hard code value, calcuate using northern tropic
-		const LONGITUDE_TO_KM = 102.08;
-		const LATITUDE_TO_KM  = 110.574;
 
 		return [
 			{
@@ -174,19 +190,40 @@ export default class App extends Component {
 	}
 
 	onPressCafe = cafe => {
+		const { viewportHeightKm, viewportWidthKm } = this.getViewportDimension();
+
 		return () => {
-			this.map.animateToCoordinate({
-				latitude: cafe.latitude,
-				longitude: cafe.longitude
-			});
+			if (this.state.isCardExpanded) {
+				this.map.animateToRegion({
+					latitude: cafe.latitude - viewportHeightKm / LATITUDE_TO_KM / 4,
+					longitude: cafe.longitude,
+					latitudeDelta: viewportHeightKm / LATITUDE_TO_KM,
+					longitudeDelta: viewportWidthKm / LONGITUDE_TO_KM
+				});
 
-			this.markerRefs[cafe.id].showCallout();
+				this.markerRefs[cafe.id].showCallout();
 
-			// workaround for coord not in center
-			this.map.animateToCoordinate({
-				latitude: cafe.latitude,
-				longitude: cafe.longitude
-			});
+				this.map.animateToRegion({
+					latitude: cafe.latitude - viewportHeightKm / LATITUDE_TO_KM / 4,
+					longitude: cafe.longitude,
+					latitudeDelta: viewportHeightKm / LATITUDE_TO_KM,
+					longitudeDelta: viewportWidthKm / LONGITUDE_TO_KM
+				});
+			} else {
+				this.map.animateToCoordinate({
+					latitude: cafe.latitude,
+					longitude: cafe.longitude
+				});
+
+				this.markerRefs[cafe.id].showCallout();
+
+				// workaround for coord not in center
+				this.map.animateToCoordinate({
+					latitude: cafe.latitude,
+					longitude: cafe.longitude
+				});
+			}
+
 		};
 	}
 
@@ -197,6 +234,7 @@ export default class App extends Component {
 					ref={ref => { this.map = ref; }}
 					style={styles.map}
 					onRegionChangeComplete={this.onRegionChangeComplete}
+					showsUserLocation={true}
 				>
 					{this.state.cafes.map(cafe => (
 						<MapView.Marker
