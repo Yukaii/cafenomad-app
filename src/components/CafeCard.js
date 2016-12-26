@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 const screen = Dimensions.get('window');
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default class CafeCard extends Component {
 	static propTypes = {
@@ -19,7 +20,8 @@ export default class CafeCard extends Component {
 		title: PropTypes.string,
 		description: PropTypes.string,
 		id: PropTypes.string,
-		rating: PropTypes.number
+		rating: PropTypes.number,
+		onNavigateButtomPress: PropTypes.func
 	}
 
 	onLayout = (id) => {
@@ -29,7 +31,7 @@ export default class CafeCard extends Component {
 	}
 
 	render() {
-		const { onPress, title, description, rating } = this.props;
+		const { onPress, title, description, rating, onNavigateButtomPress } = this.props;
 
 		return (
 			<View
@@ -40,7 +42,10 @@ export default class CafeCard extends Component {
 					<Text style={{fontSize: 16}}>{title}</Text>
 					<Text style={{fontSize: 11, color: '#3e3e3e'}}>{description}</Text>
 				</TouchableOpacity>
-				<Text>{rating} ★</Text>
+				<View style={{flexDirection: 'row', alignItems: 'center'}}>
+					<Icon name="md-map" size={18} style={{marginRight: 7, color: '#333'}} onPress={onNavigateButtomPress}/>
+					<Text style={{color: '#333'}}>{rating} <Text>★</Text></Text>
+				</View>
 			</View>
 		);
 	}

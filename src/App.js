@@ -5,7 +5,9 @@ import {
 	View,
 	ListView,
 	Animated,
-	PanResponder
+	PanResponder,
+	Linking,
+	Alert
 } from 'react-native';
 import MapView from 'react-native-maps';
 import ReactNativeComponentTree from 'ReactNativeComponentTree';
@@ -13,6 +15,7 @@ import ReactNativeComponentTree from 'ReactNativeComponentTree';
 import CafeCard from './components/CafeCard';
 
 import { getCafes } from './utils/api';
+import { geoLink } from './utils';
 
 const screen = Dimensions.get('window');
 
@@ -293,6 +296,22 @@ export default class App extends Component {
 		// alert(this.state.currentSelectCafeId);
 	}
 
+	openExternalMap = (cafe) => {
+		return () => {
+			Alert.alert(
+				'打開導航地圖',
+				'', [{
+					text: '好',
+					onPress: () => Linking.openURL(geoLink({latitude: cafe.latitude, longitude: cafe.longitude, address: cafe.address}))
+				}, {
+					text: '算了',
+					onPress: () => console.log('Cancel Pressed'),
+					style: 'cancel'
+				}]
+			);
+		};
+	}
+
 	renderNearbyCafeCard = (cafe) => {
 		return(
 			<CafeCard
@@ -303,6 +322,7 @@ export default class App extends Component {
 				title={cafe.name}
 				description={cafe.address}
 				rating={cafe.rating}
+				onNavigateButtomPress={this.openExternalMap(cafe)}
 			/>
 		);
 	}
@@ -339,7 +359,7 @@ export default class App extends Component {
 						style={{alignItems: 'center', paddingVertical: 12, borderBottomWidth: 0.5, borderColor: '#bbb'}}
 						{...this._panResponder.panHandlers}
 					>
-						<View style={{width: 35, backgroundColor: '#3e3e3e', height: 5, borderRadius: 5}} />
+						<View style={{width: 35, backgroundColor: '#c6c6c3', height: 5, borderRadius: 5}} />
 					</View>
 					<ListView
 						ref={ref => { this.listview = ref; }}
