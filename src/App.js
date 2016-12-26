@@ -93,23 +93,29 @@ export default class App extends Component {
 						toValue: {x: 0, y: -(4 / 5 - 1 / 2) * screen.height}
 					}).start();
 
-					this.setState({isCardExpanded: true});
+					if (!this.state.isCardExpanded) {
+						this.map.animateToRegion({
+							...this.currentRegion,
+							latitude: this.currentRegion.latitude - viewportHeightKm / LATITUDE_TO_KM / 4
+						});
 
-					this.map.animateToRegion({
-						...this.currentRegion,
-						latitude: this.currentRegion.latitude - viewportHeightKm / LATITUDE_TO_KM / 4
-					});
+						this.setState({isCardExpanded: true});
+					}
+
 				} else {
 					Animated.spring(this.state.drag, {
 						toValue: {x: 0, y: 0}
 					}).start();
 
-					this.setState({isCardExpanded: false});
+					if (this.state.isCardExpanded) {
+						this.map.animateToRegion({
+							...this.currentRegion,
+							latitude: this.currentRegion.latitude + viewportHeightKm / LATITUDE_TO_KM / 4
+						});
 
-					this.map.animateToRegion({
-						...this.currentRegion,
-						latitude: this.currentRegion.latitude + viewportHeightKm / LATITUDE_TO_KM / 4
-					});
+						this.setState({isCardExpanded: false});
+					}
+
 				}
 			}
 		});
