@@ -3,13 +3,13 @@ import {
 	StyleSheet,
 	Dimensions,
 	View,
-	Text,
 	ListView,
-	TouchableOpacity,
 	Animated,
 	PanResponder
 } from 'react-native';
 import MapView from 'react-native-maps';
+
+import CafeCard from './components/CafeCard';
 
 import { getCafes } from './utils/api';
 
@@ -25,9 +25,15 @@ const styles = StyleSheet.create({
 		marginLeft: 15,
 		flex: 1,
 		bottom: 0,
-		backgroundColor: 'white'
+		backgroundColor: 'white',
+		borderRadius: 10
 	}
 });
+
+const averagerating = (cafe) => {
+	let keys = ['wifi', 'seat', 'quiet', 'tasty', 'cheap', 'music'];
+	return Math.round(keys.map(k => cafe[k]).reduce((a, b) => a + b, 0) / keys.length);
+};
 
 // Hard code value, calcuate using northern tropic
 const LONGITUDE_TO_KM = 102.08;
@@ -60,7 +66,12 @@ export default class App extends Component {
 
 		getCafes().then(response => response.json()).then(cafes => {
 			this.setState({
-				cafes
+				cafes: cafes.map(cafe => {
+					return {
+						...cafe,
+						rating: averagerating(cafe)
+					};
+				})
 			});
 		});
 	}
@@ -152,7 +163,7 @@ export default class App extends Component {
 			       (cafe.longitude > boundary[1].longitude) &&
 			       (cafe.latitude  < boundary[0].latitude)  &&
 						 (cafe.latitude  > boundary[1].latitude);
-		});
+		}).sort((c1, c2) => c2.rating - c1.rating);
 
 		this.setState({
 			cafesNearby: ds.cloneWithRows(cafesNearby)
@@ -239,6 +250,18 @@ export default class App extends Component {
 		};
 	}
 
+	renderNearbyCafeCard = (cafe) => {
+		return(
+			<CafeCard
+				key={cafe.id}
+				onPress={this.onPressCafe(cafe)}
+				title={cafe.name}
+				description={cafe.address}
+				rating={cafe.rating}
+			/>
+		);
+	}
+
 	render() {
 		return(
 			<View style={{ flex: 1, position: 'relative' }}>
@@ -266,22 +289,16 @@ export default class App extends Component {
 				</MapView>
 				<Animated.View style={[styles.card, this.cardStyle()]}>
 					<View
-						style={{alignItems: 'center', paddingVertical: 10}}
+						style={{alignItems: 'center', paddingVertical: 10, borderBottomWidth: 0.5, borderColor: '#bbb'}}
 						{...this._panResponder.panHandlers}
 					>
 						<View style={{width: 35, backgroundColor: '#3e3e3e', height: 5, borderRadius: 5}} />
 					</View>
 					<ListView
-						style={{flex: 1}}
+						style={{flex: 1, paddingHorizontal: 8}}
 						dataSource={this.state.cafesNearby}
 						enableEmptySections={true}
-						renderRow={cafe => {
-							return(
-								<TouchableOpacity onPress={this.onPressCafe(cafe)} style={{flex: 1}}>
-									<Text key={cafe.id}>{cafe.name}</Text>
-								</TouchableOpacity>
-							);
-						}}
+						renderRow={this.renderNearbyCafeCard}
 					>
 					</ListView>
 				</Animated.View>
