@@ -1,14 +1,35 @@
 import React, { Component } from 'react';
-import { StyleSheet, Dimensions } from 'react-native';
+import {
+	StyleSheet,
+	Dimensions,
+	View,
+	Text,
+	ListView,
+	TouchableOpacity,
+	Animated,
+	PanResponder
+} from 'react-native';
 import MapView from 'react-native-maps';
 
 import { getCafes } from './utils/api';
 
+const screen = Dimensions.get('window');
+
 const styles = StyleSheet.create({
 	map: {
 		...StyleSheet.absoluteFillObject
+	},
+	card: {
+		marginTop: screen.height / 5 * 4,
+		width: screen.width - 30,
+		marginLeft: 15,
+		flex: 1,
+		bottom: 0,
+		backgroundColor: 'white'
 	}
 });
+
+const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 
 export default class App extends Component {
 	constructor(props) {
@@ -16,7 +37,9 @@ export default class App extends Component {
 
 		this.state = {
 			cafes: [],
-			cafesNearby: []
+			cafesNearby: ds.cloneWithRows([]),
+			markerRefs: {},
+			drag: new Animated.ValueXY(),
 		};
 	}
 
@@ -32,6 +55,49 @@ export default class App extends Component {
 				cafes
 			});
 		});
+	}
+
+	componentWillMount() {
+		this._animatedValueX = 0;
+		this._animatedValueY = 0;
+
+		this.state.drag.x.addListener((value) => this._animatedValueX = value.value);
+		this.state.drag.y.addListener((value) => this._animatedValueY = value.value);
+
+		this._panResponder = PanResponder.create({
+			onMoveShouldSetResponderCapture: () => true,
+			onMoveShouldSetPanResponderCapture: () => true,
+			onPanResponderGrant: (e, gestureState) => {
+				this.state.drag.setOffset({x: this._animatedValueX, y: this._animatedValueY});
+				this.state.drag.setValue({x: 0, y: 0}); //Initial value
+			},
+			onPanResponderMove: (e, gestureState) => {
+				if (gestureState.moveY > screen.height / 5) {
+					Animated.event([
+						null, {dx: this.state.drag.x, dy: this.state.drag.y}
+					])(e, gestureState);
+				}
+			},
+			onPanResponderRelease: (e, gestureState) => {
+				this.state.drag.flattenOffset(); // Flatten the offset so it resets the default positioning
+
+				if (gestureState.moveY < (4 / 5 + 1 / 2) / 2 * screen.height) {
+					Animated.spring(this.state.drag, {
+						toValue: {x: 0, y: -(4 / 5 - 1 / 2) * screen.height}
+					}).start();
+				} else {
+					Animated.spring(this.state.drag, {
+						toValue: {x: 0, y: 0}
+					}).start();
+				}
+			}
+		});
+
+	}
+
+	componentWillUnmount() {
+		this.state.drag.x.removeAllListeners();
+		this.state.drag.y.removeAllListeners();
 	}
 
 	onRegionChangeComplete = (region) => {
@@ -56,7 +122,7 @@ export default class App extends Component {
 		});
 
 		this.setState({
-			cafesNearby
+			cafesNearby: ds.cloneWithRows(cafesNearby)
 		});
 
 		console.log(`cafesNearby: ${cafesNearby.length}`);
@@ -93,21 +159,83 @@ export default class App extends Component {
 		];
 	}
 
+	cardStyle = () => {
+		return {
+			marginTop: Animated.add(this.state.drag.y, new Animated.Value(screen.height / 5 * 4)),
+			width: this.state.drag.y.interpolate({
+				inputRange: [-screen.height / 2, -screen.height / 3, 0, 10],
+				outputRange: [screen.width, screen.width, screen.width - 30, screen.width - 30]
+			}),
+			marginLeft: this.state.drag.y.interpolate({
+				inputRange: [-screen.height / 2, -screen.height / 3, 0, 10],
+				outputRange: [0, 0, 15, 15]
+			}),
+		};
+	}
+
+	onPressCafe = cafe => {
+		return () => {
+			this.map.animateToCoordinate({
+				latitude: cafe.latitude,
+				longitude: cafe.longitude
+			});
+
+			this.markerRefs[cafe.id].showCallout();
+
+			// workaround for coord not in center
+			this.map.animateToCoordinate({
+				latitude: cafe.latitude,
+				longitude: cafe.longitude
+			});
+		};
+	}
+
 	render() {
 		return(
-			<MapView
-				ref={ref => { this.map = ref; }}
-				style={styles.map}
-				onRegionChangeComplete={this.onRegionChangeComplete}
-			>
-				{this.state.cafes.map(cafe => (
-					<MapView.Marker
-						coordinate={{latitude: parseFloat(cafe.latitude), longitude: parseFloat(cafe.longitude)}}
-						title={cafe.name}
-						key={cafe.id}
-					/>
-				))}
-			</MapView>
+			<View style={{ flex: 1, position: 'relative' }}>
+				<MapView
+					ref={ref => { this.map = ref; }}
+					style={styles.map}
+					onRegionChangeComplete={this.onRegionChangeComplete}
+				>
+					{this.state.cafes.map(cafe => (
+						<MapView.Marker
+							coordinate={{latitude: parseFloat(cafe.latitude), longitude: parseFloat(cafe.longitude)}}
+							title={cafe.name}
+							key={cafe.id}
+							ref={
+								ref => {
+									if (typeof this.markerRefs === 'undefined') {
+										this.markerRefs = {};
+									}
+									this.markerRefs[cafe.id] = ref;
+								}
+							}
+						/>
+					))}
+				</MapView>
+				<Animated.View style={[styles.card, this.cardStyle()]}>
+					<View
+						style={{alignItems: 'center', paddingVertical: 10}}
+						{...this._panResponder.panHandlers}
+					>
+						<View style={{width: 30, backgroundColor: 'black', height: 3, borderRadius: 5}} />
+					</View>
+					<ListView
+						style={{flex: 1}}
+						dataSource={this.state.cafesNearby}
+						enableEmptySections={true}
+						renderRow={cafe => {
+							return(
+								<TouchableOpacity onPress={this.onPressCafe(cafe)} style={{flex: 1}}>
+									<Text key={cafe.id}>{cafe.name}</Text>
+								</TouchableOpacity>
+							);
+						}}
+					>
+					</ListView>
+				</Animated.View>
+			</View>
 		);
 	}
 }
