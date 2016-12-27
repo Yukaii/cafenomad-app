@@ -216,9 +216,9 @@ export default class App extends Component {
 
 	onChangeVisibleRows = () => {
 		if (this.recentSelectCafeId && this.animatedSecondTimeStart) {
-			const index = this.state.cafesNearby.findIndex(c => c.id === this.recentSelectCafeId);
-			if (index !== -1) {
-				this.scrollToCafeIndex(index);
+			const cafe = this.state.cafesNearby.find(c => c.id === this.recentSelectCafeId);
+			if (cafe) {
+				this.scrollToCafe(cafe);
 			}
 
 			this.recentSelectCafeId = null;
@@ -275,37 +275,27 @@ export default class App extends Component {
 		};
 	}
 
-	scrollToCafeIndex = (index) => {
-		if (index > 0) {
-			let sumOfHeight = 0;
-			for (let i = 0; i <= index-1; i++) {
-				sumOfHeight += this.cardHeights[this.state.cafesNearby[i].id] + 5;
-			}
-
-			this.listview.scrollTo({y: sumOfHeight});
-		} else { // index == 0
-			this.listview.scrollTo({y: 0});
-		}
+	scrollToCafe = (cafe) => {
+		this.listview.scrollTo({y: this.cardY[cafe.id]});
 	}
 
 	onCardLayout = (event, id) => {
-		const {height} = event.nativeEvent.layout;
-		if (typeof this.cardHeights === 'undefined') {
-			this.cardHeights = {};
+		const { y } = event.nativeEvent.layout;
+		if (typeof this.cardY === 'undefined') {
+			this.cardY = {};
 		}
 
-		this.cardHeights[id] = height;
+		this.cardY[id] = y;
 	}
 
 	onCafeMarkerSelect = (event) => {
 		const { latitude, longitude } = event.nativeEvent.coordinate;
 
-		const cafeIndex = this.state.cafesNearby.findIndex(cafe => cafe.latitude === latitude && cafe.longitude === longitude);
-		const cafe = this.state.cafesNearby[cafeIndex];
+		const cafe = this.state.cafesNearby.find(cafe => cafe.latitude === latitude && cafe.longitude === longitude);
 
-		if (cafeIndex !== -1) {
+		if (cafe) {
 			this.setState({currentSelectCafeId: cafe.id});
-			this.scrollToCafeIndex(cafeIndex);
+			this.scrollToCafe(cafe);
 		}
 	}
 
