@@ -43,7 +43,9 @@ export default class CafeCard extends Component {
 					<Text style={{fontSize: 11, color: '#3e3e3e'}}>{description}</Text>
 				</TouchableOpacity>
 				<View style={{flexDirection: 'row', alignItems: 'center'}}>
-					<Icon name="md-map" size={18} style={{marginRight: 7, color: '#333'}} onPress={onNavigateButtomPress}/>
+					<TouchableOpacity onPress={onNavigateButtomPress} style={{padding: 7}}>
+						<Icon name="md-map" size={19} style={{marginRight: 7, color: '#333'}} />
+					</TouchableOpacity>
 					<Text style={{color: '#333'}}>{rating} <Text>★</Text></Text>
 				</View>
 			</View>

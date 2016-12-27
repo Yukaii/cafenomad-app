@@ -354,7 +354,7 @@ export default class App extends Component {
 					</View>
 					<ListView
 						ref={ref => { this.listview = ref; }}
-						style={{flex: 1, paddingHorizontal: 8, paddingVertical: 5}}
+						style={{flex: 1, paddingHorizontal: 6, paddingVertical: 5}}
 						dataSource={this.state.cafesNearbyDs}
 						enableEmptySections={true}
 						renderRow={this.renderNearbyCafeCard}
