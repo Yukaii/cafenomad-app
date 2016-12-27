@@ -25,8 +25,7 @@ const styles = StyleSheet.create({
 	},
 	card: {
 		marginTop: screen.height / 5 * 4,
-		width: screen.width - 30,
-		marginLeft: 15,
+		width: screen.width,
 		flex: 1,
 		bottom: 0,
 		backgroundColor: 'white',
@@ -216,15 +215,7 @@ export default class App extends Component {
 
 	cardStyle = () => {
 		return {
-			marginTop: Animated.add(this.state.drag.y, new Animated.Value(screen.height / 5 * 4)),
-			width: this.state.drag.y.interpolate({
-				inputRange: [-screen.height / 2, -screen.height / 3, 0, 10],
-				outputRange: [screen.width, screen.width, screen.width - 30, screen.width - 30]
-			}),
-			marginLeft: this.state.drag.y.interpolate({
-				inputRange: [-screen.height / 2, -screen.height / 3, 0, 10],
-				outputRange: [0, 0, 15, 15]
-			}),
+			marginTop: Animated.add(this.state.drag.y, new Animated.Value(screen.height / 5 * 4))
 		};
 	}
 
