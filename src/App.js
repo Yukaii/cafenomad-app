@@ -214,14 +214,16 @@ export default class App extends Component {
 		});
 	}
 
-	onChangeVisibleRows = () => {
+	scrollToCafeCallback = () => {
 		if (this.recentSelectCafeId && this.animatedSecondTimeStart) {
+			// alert('onChangeVisibleRows!');
 			const cafe = this.state.cafesNearby.find(c => c.id === this.recentSelectCafeId);
 			if (cafe) {
 				this.scrollToCafe(cafe);
 			}
 
 			this.recentSelectCafeId = null;
+			this.animatedSecondTimeStart = false;
 		}
 	}
 
@@ -272,6 +274,8 @@ export default class App extends Component {
 			}
 
 			this.recentSelectCafeId = cafe.id;
+
+			setTimeout(this.scrollToCafeCallback, 1000);
 		};
 	}
 
@@ -370,7 +374,6 @@ export default class App extends Component {
 						dataSource={this.state.cafesNearbyDs}
 						enableEmptySections={true}
 						renderRow={this.renderNearbyCafeCard}
-						onChangeVisibleRows={this.onChangeVisibleRows}
 					>
 					</ListView>
 				</Animated.View>
