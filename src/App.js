@@ -65,7 +65,9 @@ export default class App extends Component {
 			});
 
 			this.setState({hasZoomIn: true});
-		});
+		},
+		error => error,
+		{enableHighAccuracy: true, timeout: 20000, maximumAge: 1000});
 
 		getCafes().then(response => response.json()).then(cafes => {
 			this.setState({
