@@ -9,7 +9,9 @@ import {
 	Linking,
 	Alert
 } from 'react-native';
+
 import MapView from 'react-native-maps';
+import SplashScreen from 'react-native-splash-screen';
 
 import CafeCard from './components/CafeCard';
 
@@ -59,6 +61,8 @@ export default class App extends Component {
 	}
 
 	componentDidMount() {
+		SplashScreen.hide();
+
 		navigator.geolocation.getCurrentPosition(position => {
 			this.map.fitToCoordinates(this.positionRect(position.coords), {
 				animated: true

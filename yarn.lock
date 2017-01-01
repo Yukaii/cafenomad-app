@@ -3413,6 +3413,10 @@ react-native-maps:
   version "0.12.2"
   resolved "https://registry.yarnpkg.com/react-native-maps/-/react-native-maps-0.12.2.tgz#f13603ab908acee6e4afe8978b65e6138c30f50b"
 
+react-native-splash-screen:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-1.0.9.tgz#4d0847e43cab297d6f8c3e98909f00a15929cb27"
+
 react-native-vector-icons:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-native-vector-icons/-/react-native-vector-icons-3.0.0.tgz#a2f63757dee4fb89f67eef660e25e86926ae6827"

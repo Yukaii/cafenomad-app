@@ -32,6 +32,7 @@
 		655D70EA4DC9495EA81738A1 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 14773ECF000F4059A1144A6B /* Foundation.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		9211D0C1571241BF99FE97E8 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B6E57CFAE27E4B1B996C494A /* SimpleLineIcons.ttf */; };
+		9B247052E895448890E64580 /* libSplashScreen.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 104C8A88FF3445D9B33BB802 /* libSplashScreen.a */; };
 		9FC84964EBAF4AA5B6597EC8 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8239CE50FE4E4ADFADFEA0AC /* Zocial.ttf */; };
 		A5EF2D23309442898DAF2E9D /* libAirMaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A203BE6838254C1E924EED9F /* libAirMaps.a */; };
 		D7E997FCA5F846F5B2E95F24 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 43ED79D53BB041E5AB520890 /* libRNVectorIcons.a */; };
@@ -150,6 +151,13 @@
 			remoteGlobalIDString = 2D2A28131D9B038B00D4039D;
 			remoteInfo = "React-tvOS";
 		};
+		329F733C1E18A71300F8B039 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1F0AF93454714BC7A77808ED /* SplashScreen.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D7682761D8E76B80014119E;
+			remoteInfo = SplashScreen;
+		};
 		32D8212C1E06D6F7008E24CF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A0055D56500A44248965520B /* AirMaps.xcodeproj */;
@@ -204,6 +212,7 @@
 		00E356EE1AD99517003FC87E /* cafenomadTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = cafenomadTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* cafenomadTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = cafenomadTests.m; sourceTree = "<group>"; };
+		104C8A88FF3445D9B33BB802 /* libSplashScreen.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libSplashScreen.a; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* cafenomad.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cafenomad.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -215,6 +224,7 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = cafenomad/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		14773ECF000F4059A1144A6B /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
+		1F0AF93454714BC7A77808ED /* SplashScreen.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = SplashScreen.xcodeproj; path = "../node_modules/react-native-splash-screen/ios/SplashScreen.xcodeproj"; sourceTree = "<group>"; };
 		405A6F75C5D54A80AD9A0F5D /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		43ED79D53BB041E5AB520890 /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		5D5A35AE3CC04BF4A883DE62 /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
@@ -258,6 +268,7 @@
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				A5EF2D23309442898DAF2E9D /* libAirMaps.a in Frameworks */,
 				D7E997FCA5F846F5B2E95F24 /* libRNVectorIcons.a in Frameworks */,
+				9B247052E895448890E64580 /* libSplashScreen.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +375,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		329F73241E18A71100F8B039 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				329F733D1E18A71300F8B039 /* libSplashScreen.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		32D821291E06D6F5008E24CF /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -414,6 +433,7 @@
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
 				A0055D56500A44248965520B /* AirMaps.xcodeproj */,
 				5D5A35AE3CC04BF4A883DE62 /* RNVectorIcons.xcodeproj */,
+				1F0AF93454714BC7A77808ED /* SplashScreen.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -586,6 +606,10 @@
 					ProductGroup = 32DF7F9C1E11793A007CF4C4 /* Products */;
 					ProjectRef = 5D5A35AE3CC04BF4A883DE62 /* RNVectorIcons.xcodeproj */;
 				},
+				{
+					ProductGroup = 329F73241E18A71100F8B039 /* Products */;
+					ProjectRef = 1F0AF93454714BC7A77808ED /* SplashScreen.xcodeproj */;
+				},
 			);
 			projectRoot = "";
 			targets = (
@@ -699,6 +723,13 @@
 			fileType = archive.ar;
 			path = "libReact-tvOS.a";
 			remoteRef = 3225F5A51E067E15006F1A7D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		329F733D1E18A71300F8B039 /* libSplashScreen.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSplashScreen.a;
+			remoteRef = 329F733C1E18A71300F8B039 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		32D8212D1E06D6F7008E24CF /* libAirMaps.a */ = {
@@ -846,6 +877,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/cafenomad.app/cafenomad";
@@ -862,6 +894,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
@@ -948,6 +981,7 @@
 					"$(SRCROOT)/../node_modules/react-native/ReactCommon/**",
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -991,6 +1025,7 @@
 					"$(SRCROOT)/../node_modules/react-native/ReactCommon/**",
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-vector-icons/RNVectorIconsManager",
+					"$(SRCROOT)/../node_modules/react-native-splash-screen/ios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
