@@ -314,12 +314,13 @@ export default class App extends Component {
 			Alert.alert(
 				'打開導航地圖',
 				'', [{
-					text: '好',
-					onPress: () => Linking.openURL(geoLink({latitude: cafe.latitude, longitude: cafe.longitude, address: cafe.address}))
-				}, {
 					text: '算了',
 					onPress: () => console.log('Cancel Pressed'),
 					style: 'cancel'
+				}, {
+					text: '好',
+					style: 'default',
+					onPress: () => Linking.openURL(geoLink({latitude: cafe.latitude, longitude: cafe.longitude, address: cafe.address}))
 				}]
 			);
 		};
