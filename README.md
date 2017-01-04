@@ -31,3 +31,7 @@ yarn
 ```
 
 到 [Google API Console](https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend) 申請你自己的 Google Map API Key。
+
+## License
+
+MIT
