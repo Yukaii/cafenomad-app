@@ -538,7 +538,7 @@
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = DQE5N5NDYT;
+						DevelopmentTeam = K869K5WH63;
 					};
 				};
 			};
@@ -909,7 +909,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = DQE5N5NDYT;
+				DEVELOPMENT_TEAM = K869K5WH63;
 				INFOPLIST_FILE = cafenomad/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -917,6 +917,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tds.cafenomadapp;
 				PRODUCT_NAME = cafenomad;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -928,7 +929,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = DQE5N5NDYT;
+				DEVELOPMENT_TEAM = K869K5WH63;
 				INFOPLIST_FILE = cafenomad/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -936,6 +937,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.tds.cafenomadapp;
 				PRODUCT_NAME = cafenomad;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
