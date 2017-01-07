@@ -7,16 +7,21 @@ import {
 	Animated,
 	PanResponder,
 	Linking,
-	Alert
+	Alert,
+	Platform
 } from 'react-native';
 
 import MapView from 'react-native-maps';
 import SplashScreen from 'react-native-splash-screen';
 
+import codePush from 'react-native-code-push';
+
 import CafeCard from './components/CafeCard';
 
 import { getCafes } from './utils/api';
 import { geoLink } from './utils';
+
+import config from './config';
 
 const screen = Dimensions.get('window');
 
@@ -61,6 +66,8 @@ export default class App extends Component {
 	}
 
 	componentDidMount() {
+		this.initCodePush();
+
 		SplashScreen.hide();
 
 		navigator.geolocation.getCurrentPosition(position => {
@@ -153,6 +160,13 @@ export default class App extends Component {
 	componentWillUnmount() {
 		this.state.drag.x.removeAllListeners();
 		this.state.drag.y.removeAllListeners();
+	}
+
+	initCodePush() {
+		codePush.sync({
+			deploymentKey: config.codepushDeploymentKey[Platform.OS],
+			installMode: codePush.InstallMode.IMMEDIATE
+		});
 	}
 
 	getViewportDimension() {

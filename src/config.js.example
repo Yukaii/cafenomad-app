@@ -1,0 +1,6 @@
+module.exports = {
+	codepushDeploymentKey: {
+		ios: '',
+		android: ''
+	}
+};

@@ -13,7 +13,11 @@
 ```bash
 npm install -g yarn
 yarn
+
+cp src/config.js.example src/config.js
 ```
+
+開啟 `src/config.js` 分別填入 CodePush 的 Deployment key。
 
 ### iOS
 
